@@ -1,0 +1,20 @@
+/* Participant Checklist Styles */
+#participants-checklist {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    border: 1px solid #eee;
+    padding: 10px;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+}
+
+.participant-item input {
+    margin-right: 10px;
+}

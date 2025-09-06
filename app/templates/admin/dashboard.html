@@ -1,0 +1,19 @@
+{% extends "admin/layout.html" %}
+
+{% block admin_content %}
+<div class="calendar-container">
+    <h2>전체 예약 현황</h2>
+    <div id="admin-calendar"></div>
+</div>
+
+<!-- Admin Day Details Modal -->
+<div id="admin-day-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h3><span id="admin-modal-date-display"></span> 예약 상세</h3>
+        <div id="admin-day-details">
+            <!-- Reservation details will be populated here by JS -->
+        </div>
+    </div>
+</div>
+{% endblock %}

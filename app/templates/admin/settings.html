@@ -1,0 +1,12 @@
+{% extends "admin/layout.html" %}
+
+{% block admin_content %}
+<div class="form-container">
+    <h2>시스템 설정</h2>
+    <form id="settings-form">
+        <!-- Settings will be populated here by JS -->
+        <button type="submit">저장</button>
+        <p id="settings-success-message" style="color: green; display: none;">성공적으로 저장되었습니다.</p>
+    </form>
+</div>
+{% endblock %}

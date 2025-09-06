@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="calendar-container">
+    <h2>예약 현황</h2>
+    <div id="calendar"></div>
+</div>
+
+<!-- Reservation Modal -->
+<div id="reservation-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h3>예약 신청</h3>
+        <form id="reservation-form">
+            <input type="hidden" id="reservation-date" />
+            <p><strong>날짜:</strong> <span id="modal-date-display"></span></p>
+            
+            <div class="form-group">
+                <label>시간</label>
+                <div class="radio-group">
+                    <input type="radio" id="slot-morning" name="time_slot" value="MORNING" required>
+                    <label for="slot-morning">아침</label>
+                    <input type="radio" id="slot-lunch" name="time_slot" value="LUNCH">
+                    <label for="slot-lunch">점심</label>
+                    <input type="radio" id="slot-dinner" name="time_slot" value="DINNER">
+                    <label for="slot-dinner">저녁</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="team-select">팀 선택</label>
+                <select id="team-select" required>
+                    <!-- User's teams will be populated here by JS -->
+                </select>
+            </div>
+
+            <div id="participants-container" class="form-group" style="display: none;">
+                <label>참여 팀원</label>
+                <div id="participants-checklist">
+                    <!-- Team members will be populated here by JS -->
+                </div>
+            </div>
+
+            <button type="submit">신청하기</button>
+            <p id="modal-error-message" class="error-message"></p>
+        </form>
+    </div>
+</div>
+{% endblock %}
