@@ -18,12 +18,12 @@ def create_reservation(
     """Create a new reservation for the current user's team."""
     return reservation_service.create_reservation(db=db, reservation=reservation, user_id=current_user.id)
 
-@router.get("/reservations", response_model=List[reservation_schema.Reservation])
-def get_reservations(
+@router.get("/reservations", response_model=List[reservation_schema.ReservationDetails])
+def get_reservations_by_month(
     year: int,
     month: int,
     db: Session = Depends(get_db),
     current_user: user_schema.User = Depends(get_current_user) # Ensures endpoint is protected
 ):
     """Get all reservations for a given year and month."""
-    return reservation_service.get_reservations_for_month(db=db, year=year, month=month)
+    return admin_service.get_reservations_by_month(db=db, year=year, month=month)

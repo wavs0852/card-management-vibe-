@@ -17,11 +17,17 @@ def update_setting(db: Session, setting: setting_schema.Setting):
     db.refresh(db_setting)
     return db_setting
 
-def get_reservations_by_date(db: Session, reservation_date: date):
+def get_reservations_by_month(db: Session, year: int, month: int):
+    start_date = date(year, month, 1)
+    end_date = date(year, month + 1, 1) if month < 12 else date(year + 1, 1, 1)
+
     return db.query(models.Reservation).options(
         joinedload(models.Reservation.team),
         joinedload(models.Reservation.participants).joinedload(models.ReservationParticipant.user)
-    ).filter(models.Reservation.reservation_date == reservation_date).order_by(models.Reservation.time_slot).all()
+    ).filter(
+        models.Reservation.reservation_date >= start_date,
+        models.Reservation.reservation_date < end_date
+    ).order_by(models.Reservation.time_slot).all()
 
 def create_course(db: Session, course: course_schema.CourseCreate):
     db_course = models.Course(name=course.name)

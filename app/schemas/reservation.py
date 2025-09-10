@@ -4,7 +4,7 @@ from typing import List
 
 from app.db.models import TimeSlot
 from .user import User
-from .team import Team # Import the Pydantic Team schema
+from .team import Team
 
 class ReservationBase(BaseModel):
     reservation_date: date
@@ -14,16 +14,25 @@ class ReservationBase(BaseModel):
 class ReservationCreate(ReservationBase):
     participant_ids: List[int] = Field(..., min_length=1)
 
-class ReservationParticipant(BaseModel):
+# Schema for displaying participant details in reservation info
+class ReservationParticipantInfo(BaseModel):
     user: User
     class Config:
         from_attributes = True
 
+# Schema for displaying reservation details, especially for admins
+class ReservationDetails(ReservationBase):
+    id: int
+    team: Team
+    participants: List[ReservationParticipantInfo]
+
+    class Config:
+        from_attributes = True
+
+# Basic reservation info for student view
 class Reservation(ReservationBase):
     id: int
     is_confirmed: bool
-    team: Team # This now correctly refers to the Pydantic schema
-    participants: List[ReservationParticipant]
 
     class Config:
         from_attributes = True

@@ -1,0 +1,63 @@
+/* Calendar Grid */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: #ddd;
+    border: 1px solid #ddd;
+}
+
+.calendar-header {
+    text-align: center;
+    padding: 10px;
+    background-color: #f4f7f6;
+    font-weight: bold;
+}
+
+.day-cell {
+    background-color: #fff;
+    min-height: 100px;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+}
+
+.day-cell:hover {
+    background-color: #e9f5ff;
+}
+
+.day-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+    text-align: right;
+}
+
+/* Time Slot Bars */
+.slot-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex-grow: 1;
+}
+
+.slot-bar {
+    height: 18px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding-left: 5px;
+    font-size: 0.75rem;
+    color: white;
+    font-weight: bold;
+}
+
+.slot-bar.available {
+    background-color: #3498db; /* Blue */
+}
+
+.slot-bar.full {
+    background-color: #e74c3c; /* Red */
+}

@@ -36,6 +36,6 @@ def get_settings(db: Session = Depends(get_db)):
 def update_setting(setting: setting_schema.Setting, db: Session = Depends(get_db)):
     return admin_service.update_setting(db=db, setting=setting)
 
-@router.get("/reservations-by-date", response_model=List[reservation_schema.Reservation], dependencies=[Depends(get_current_admin_user)])
-def get_reservations_by_date(reservation_date: date, db: Session = Depends(get_db)):
-    return admin_service.get_reservations_by_date(db=db, reservation_date=reservation_date)
+@router.get("/reservations-by-month", response_model=List[reservation_schema.ReservationDetails], dependencies=[Depends(get_current_admin_user)])
+def get_reservations_by_month(year: int, month: int, db: Session = Depends(get_db)):
+    return admin_service.get_reservations_by_month(db=db, year=year, month=month)

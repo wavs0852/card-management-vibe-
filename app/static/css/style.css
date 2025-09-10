@@ -88,7 +88,25 @@ button:hover {
     display: none; /* Hidden by default */
 }
 
-/* Calendar Styles */
+/* --- Unified Calendar Styles --- */
+.calendar-container {
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.calendar-header h3 {
+    margin: 0;
+}
+
 #calendar, #admin-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -101,6 +119,7 @@ button:hover {
     min-height: 100px;
     background-color: #fff;
     cursor: pointer;
+    transition: background-color 0.2s;
     display: flex;
     flex-direction: column;
 }
@@ -114,30 +133,25 @@ button:hover {
     margin-bottom: 5px;
 }
 
-.time-slot-bar {
-    height: 15px;
-    margin-bottom: 3px;
-    border-radius: 3px;
+.day-reservations {
+    flex-grow: 1;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.7em;
-    color: white;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.time-slot-bar.available {
-    background-color: #3498db; /* Blue */
+.slot-bar {
+    height: 5px;
+    width: 100%;
+    background-color: #e9ecef; /* Default empty color */
+    border-radius: 2px;
 }
 
-.time-slot-bar.full {
-    background-color: #e74c3c; /* Red */
+.slot-bar.reserved {
+    background-color: #28a745; /* Green for reserved */
 }
 
-.time-slot-bar.booked {
-    background-color: #2ecc71; /* Green for booked slots */
-}
-
-/* Modal Styles */
+/* --- Modal Styles --- */
 .modal {
     display: none; 
     position: fixed; 
@@ -152,11 +166,11 @@ button:hover {
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; 
+    margin: 10% auto; /* Adjusted margin */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
+    width: 90%;
+    max-width: 600px; /* Increased width for details */
     border-radius: 8px;
 }
 
