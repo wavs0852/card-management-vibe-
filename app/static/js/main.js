@@ -1,3 +1,63 @@
+const TIME_SLOTS = ["MORNING", "LUNCH", "DINNER"];
+
+// Common calendar rendering logic
+async function renderCalendarGrid(calendarEl, year, month, reservations, clickHandler, maxConcurrentTeams) {
+    calendarEl.innerHTML = ''; // Clear previous calendar
+
+    const daysInMonth = new Date(year, month, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+        let dayEl = document.createElement('div');
+        dayEl.className = 'day';
+        const currentDateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        dayEl.dataset.date = currentDateStr;
+        
+        let dayContent = `<div class="day-number">${i}</div>`;
+        
+        const dayReservations = reservations.filter(r => r.reservation_date === currentDateStr);
+
+        for (const slot of TIME_SLOTS) {
+            const slotReservations = dayReservations.filter(r => r.time_slot === slot);
+            const isFull = slotReservations.length >= maxConcurrentTeams;
+            const isBooked = slotReservations.length > 0; // Check if any reservation exists for this slot
+
+            let barClass = '';
+            if (isBooked) {
+                barClass = 'booked'; // Green if booked
+            } else if (isFull) {
+                barClass = 'full'; // Red if full
+            } else {
+                barClass = 'available'; // Blue if available
+            }
+            
+            const barText = `${slot.charAt(0)}`; // M, L, D
+            dayContent += `<div class="time-slot-bar ${barClass}">${barText}</div>`;
+        }
+
+        dayEl.innerHTML = dayContent;
+        dayEl.addEventListener('click', () => clickHandler(currentDateStr));
+        calendarEl.appendChild(dayEl);
+    }
+}
+
+// This function is made global for admin.js to use
+async function fetchMaxConcurrentTeams() {
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch('/api/admin/settings', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+            const settings = await response.json();
+            const maxTeamsSetting = settings.find(s => s.key === 'max_concurrent_teams');
+            return maxTeamsSetting ? parseInt(maxTeamsSetting.value) : 6; // Default to 6
+        }
+    } catch (error) {
+        console.error("Failed to fetch max concurrent teams setting:", error);
+    }
+    return 6; // Default if fetch fails
+}
+
+
 document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('calendar')) {
         initializeReservationPage();
@@ -26,7 +86,6 @@ async function fetchUserData(token) {
         });
         if (!response.ok) throw new Error('Failed to fetch user data');
         currentUser = await response.json();
-        console.log(currentUser);
     } catch (error) {
         console.error(error);
         logout();
@@ -35,11 +94,10 @@ async function fetchUserData(token) {
 
 async function renderCalendar(year, month) {
     const calendarEl = document.getElementById('calendar');
-    calendarEl.innerHTML = '';
-    // Calendar header etc. would go here
-
     const token = localStorage.getItem('accessToken');
     let reservations = [];
+    let maxConcurrentTeams = await fetchMaxConcurrentTeams();
+
     try {
         const response = await fetch(`/api/student/reservations?year=${year}&month=${month}`, {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -51,27 +109,7 @@ async function renderCalendar(year, month) {
         console.error("Could not fetch reservations");
     }
 
-    const daysInMonth = new Date(year, month, 0).getDate();
-    for (let i = 1; i <= daysInMonth; i++) {
-        let dayEl = document.createElement('div');
-        dayEl.className = 'day';
-        const currentDateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        dayEl.dataset.date = currentDateStr;
-        
-        let dayContent = `<div class="day-number">${i}</div>`;
-        const dayReservations = reservations.filter(r => r.reservation_date === currentDateStr);
-        if(dayReservations.length > 0) {
-            dayContent += `<div class="reservations">`;
-            dayReservations.forEach(r => {
-                dayContent += `<div class="reservation-tag">${r.time_slot}</div>`;
-            });
-            dayContent += `</div>`;
-        }
-
-        dayEl.innerHTML = dayContent;
-        dayEl.addEventListener('click', () => openModal(currentDateStr));
-        calendarEl.appendChild(dayEl);
-    }
+    renderCalendarGrid(calendarEl, year, month, reservations, (date) => openModal(date), maxConcurrentTeams);
 }
 
 // --- Modal & Form Logic ---
@@ -154,18 +192,11 @@ reservationForm.addEventListener('submit', async function(e) {
         return;
     }
 
-    const selectedParticipants = Array.from(document.querySelectorAll('input[name="participants"]:checked')).map(cb => parseInt(cb.value));
-    if (selectedParticipants.length === 0) {
-        modalErrorMessage.textContent = '최소 한 명의 참여자가 필요합니다.';
-        modalErrorMessage.style.display = 'block';
-        return;
-    }
-
     const reservationData = {
         reservation_date: reservationDateInput.value,
         time_slot: selectedTimeSlot.value,
         team_id: parseInt(teamSelect.value),
-        participant_ids: selectedParticipants
+        participant_ids: Array.from(document.querySelectorAll('input[name="participants"]:checked')).map(cb => parseInt(cb.value))
     };
 
     const token = localStorage.getItem('accessToken');

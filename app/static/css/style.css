@@ -89,7 +89,7 @@ button:hover {
 }
 
 /* Calendar Styles */
-#calendar {
+#calendar, #admin-calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
@@ -101,10 +101,40 @@ button:hover {
     min-height: 100px;
     background-color: #fff;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
 }
 
 .day:hover {
     background-color: #e9f5ff;
+}
+
+.day-number {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.time-slot-bar {
+    height: 15px;
+    margin-bottom: 3px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7em;
+    color: white;
+}
+
+.time-slot-bar.available {
+    background-color: #3498db; /* Blue */
+}
+
+.time-slot-bar.full {
+    background-color: #e74c3c; /* Red */
+}
+
+.time-slot-bar.booked {
+    background-color: #2ecc71; /* Green for booked slots */
 }
 
 /* Modal Styles */

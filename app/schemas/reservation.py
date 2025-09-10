@@ -1,8 +1,10 @@
 from pydantic import BaseModel, Field
 from datetime import date
-from typing import List, Optional
+from typing import List
+
 from app.db.models import TimeSlot
-from .user import User # Import User schema for response
+from .user import User
+from .team import Team # Import the Pydantic Team schema
 
 class ReservationBase(BaseModel):
     reservation_date: date
@@ -20,6 +22,7 @@ class ReservationParticipant(BaseModel):
 class Reservation(ReservationBase):
     id: int
     is_confirmed: bool
+    team: Team # This now correctly refers to the Pydantic schema
     participants: List[ReservationParticipant]
 
     class Config:

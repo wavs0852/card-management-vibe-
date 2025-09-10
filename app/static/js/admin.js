@@ -40,23 +40,24 @@ document.addEventListener('DOMContentLoaded', async function () {
 // --- Admin Dashboard Logic ---
 async function initializeAdminDashboard() {
     const today = new Date();
-    await renderAdminCalendar(today.getFullYear(), today.getMonth() + 1);
-}
-
-async function renderAdminCalendar(year, month) {
     const calendarEl = document.getElementById('admin-calendar');
-    calendarEl.innerHTML = ''; // Clear previous calendar
+    const token = localStorage.getItem('accessToken');
+    let reservations = [];
+    let maxConcurrentTeams = await fetchMaxConcurrentTeams(); // Use global function
 
-    const daysInMonth = new Date(year, month, 0).getDate();
-    for (let i = 1; i <= daysInMonth; i++) {
-        let dayEl = document.createElement('div');
-        dayEl.className = 'day';
-        const currentDateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-        dayEl.dataset.date = currentDateStr;
-        dayEl.innerHTML = `<div class="day-number">${i}</div>`;
-        dayEl.addEventListener('click', () => openAdminDayModal(currentDateStr));
-        calendarEl.appendChild(dayEl);
+    try {
+        const response = await fetch(`/api/admin/reservations-by-date?reservation_date=${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if(response.ok) {
+            reservations = await response.json();
+        }
+    } catch (error) {
+        console.error("Could not fetch reservations for admin dashboard");
     }
+
+    // Use the common rendering function
+    renderCalendarGrid(calendarEl, today.getFullYear(), today.getMonth() + 1, reservations, (date) => openAdminDayModal(date), maxConcurrentTeams);
 }
 
 async function openAdminDayModal(date) {
@@ -87,8 +88,8 @@ async function openAdminDayModal(date) {
                 if (resList.length > 0) {
                     content += '<ul>';
                     resList.forEach(res => {
-                        const participants = res.participants.map(p => p.user.full_name).join(', ');
-                        content += `<li><b>${res.team.name}:</b> ${participants}</li>`;
+                        const participants = res.participants_names.join(', '); // Use participants_names
+                        content += `<li><b>${res.team_name}:</b> ${participants}</li>`; // Use team_name
                     });
                     content += '</ul>';
                 } else {
